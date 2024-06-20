@@ -96,7 +96,7 @@ function menuQuestionsResponse(menuQuestions) {
       ViewUtilizedBudgetOfADepartment();
       break;
 */
-    case"Quit",
+    case "Quit":
       console.log("Goodbye");
   }
 
@@ -125,19 +125,82 @@ function viewAllEmployees = () => {
 }
 
 // user prompted to enter the name of the department and that department is added to the database
-function addDepartment();
-
+function addDepartment = () => {
+  inquirer.prompt([
+    {
+      type: "input",
+      message: "Enter the name of the new Department",
+      name: "newDepartment",
+    },
+  ])
+  .then
+};
 
 // prompted to enter the name, salary, and department for the role and that role is added to the database
-function addRole();
-
-
+function addRole = () => {
+  inquirer.prompt([
+    {
+      type: "input",
+      message: "Enter the name of the new Role",
+      name: "newRole",
+    },
+    {
+      type: "input",
+      message: "Enter the salary for the new Role",
+      name: "newRoleSalary",
+    },
+    {
+      type: "input",
+      message: "Enter department for the new Role",
+      name: "newRole",
+    },
+  ])
+  .then
+};
 // prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
-function addEmployee();
+function addEmployee = () => {
+  inquirer.prompt([
+    {
+      type: "input",
+      message: "Enter the first name of the new Employee",
+      name: "first_name",
+    },
+    {
+      type: "input",
+      message: "Enter the last name of the new Employee",
+      name: "last_name",
+    },
+    {
+      type: "input",
+      message: "Enter the role of the new Employee",
+      name: "newEmployeeRole",
+    },
+    {
+      type: "input",
+      message: "Who will be the manager for the new Employee",
+      name: "manager",
+    },
 
+  ])
+  .then
+};
 
 // prompted to select an employee to update and their new role and this information is updated in the database 
-function updateEmployeeRole();
+function updateEmployeeRole = () => {
+  inquirer.prompt([
+    {
+      type: "list", // SELECT EMPLOYEE
+      message: "Which employee do you want to update?",
+      name: "updatedEmployee",
+    },
+    {
+      type: "input",
+      message: "What is their new role?",
+      name: "updatedRole",
+      }
+  ])
+  .then
+};
 
 /* Bonus Points
 function updateEmployeeManager();
