@@ -121,59 +121,91 @@ pool.query(
 
 // displays department table
 function viewAllDepartments() {
-  db.query('SELECT * FROM department', function (err, { res }) {
-  console.log(res);
-  if (err) throw err;
-
-  let departmentArray = [];
-  res.forEach(department => departmentArray.push(department));
-  console.table(departmentArray);
-
-}  
-)};
-
-// displays roles table
-function viewAllRoles = () => {
-  db.query('SELECT * FROM department', function (err, { res }) {
-  console.log(res);
-  if (err) throw err;
-    
-  let departmentArray = [];
-  res.forEach(department => departmentArray.push(department));
-  console.table(departmentArray);
-     
-  }  
-}
-
-// displays employees table
-function viewAllEmployees = () => {
-  function (err, { res }) {
-    console.log(res);
-  }db.query('SELECT * FROM department', function (err, { res }) {
+  try{
+    db.query('SELECT * FROM department', function (err, { res }) {
     console.log(res);
     if (err) throw err;
-  
+
     let departmentArray = [];
     res.forEach(department => departmentArray.push(department));
     console.table(departmentArray);
-    
-}
+    menublock()
+  });
+  }catch (err) {
+    console.log(err);
+    menublock();
+  };
+};
 
+
+// displays roles table
+function viewAllRoles() {
+  try{
+    db.query('SELECT * FROM role', function (err, { res }) {
+    console.log(res);
+    if (err) throw err;
+
+    let roleArray = [];
+    res.forEach(employee => employeeArray.push(employee));
+    console.table(employeeArray);
+    menublock()
+  });
+  }catch (err) {
+    console.log(err);
+    menublock();
+  };
+};
+
+// displays employees table
+function viewAllEmployees() {
+  try{
+    db.query('SELECT * FROM employee', function (err, { res }) {
+    console.log(res);
+    if (err) throw err;
+
+    let employeeArray = [];
+    res.forEach(employee => employeeArray.push(employee));
+    console.table(employeeArray);
+    menublock()
+  });
+  }catch (err) {
+    console.log(err);
+    menublock();
+  };
+};
 // user prompted to enter the name of the department and that department is added to the database
-function addDepartment = () => {
-  inquirer.prompt([
+function addDepartment() {
+  try{
+    console.log('Add a new Department');
+
+    let answer = inquirer.prompt([
     {
       type: "input",
       message: "Enter the name of the new Department",
       name: "newDepartment",
     },
   ])
-  .then
+
+  let result = db.query('INSERT INTO department', { name: answer.newDepartment});
+
+  console.log(`Successfully add ${answer.newDepartment} to department`);
+  menublock();
+
+  }catch (err) {
+    console.log(err);
+    menublock();
+};
 };
 
 // prompted to enter the name, salary, and department for the role and that role is added to the database
-function addRole = () => {
-  inquirer.prompt([
+function addRole() {
+  try{
+  console.log('Add a new Role');
+
+
+  let departments = db.query("SELECT * FROM department")
+
+  let answer = inquirer.prompt(
     {
       type: "input",
       message: "Enter the name of the new Role",
@@ -185,16 +217,40 @@ function addRole = () => {
       name: "newRoleSalary",
     },
     {
-      type: "input",
-      message: "Enter department for the new Role",
-      name: "newRole",
-    },
-  ])
-  .then
+      type: "list",
+      message: "Enter department ID for the new Role",
+      name: "departmentID",
+      choices: departments.map(departmentID) {
+        name:departmentID.name,
+        value: departmentID.id,
+      },
+    });
+
+    // need to add new Role ID number into departments
+    let givenDept = 0;
+    for(let i = 0; i < departments.length; i++) {
+      if(departments[i].departmentID === answer.choice) {
+        givenDept = department[i];
+      }
+    }
+    
+  let result = db.query('INSERT INTO role', { title: answer.newRole, salary: answer.salary, department_id: answer.roleID });
+
+  console.log(`Successfully add ${answer.newRole} to department`);
+  menublock();
+
+  }catch (err) {
+    console.log(err);
+    menublock();
 };
+};
+
 // prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
-function addEmployee = () => {
-  inquirer.prompt([
+function addEmployee() {
+  try{
+  console.log('Add an new Employee');
+
+  let answer = inquirer.prompt([
     {
       type: "input",
       message: "Enter the first name of the new Employee",
@@ -206,30 +262,40 @@ function addEmployee = () => {
       name: "last_name",
     },
     {
-      type: "input",
-      message: "Enter the role of the new Employee",
+      type: "input", // need to create list
+      message: "Enter the role ID of the new Employee",
       name: "newEmployeeRole",
     },
     {
-      type: "input",
+      type: "input", // need to create list
       message: "Who will be the manager for the new Employee",
       name: "manager",
     },
 
   ])
-  .then
-};
+  let result = db.query('INSERT INTO employee', { first_name: answer.first_name, last_name: answer.last_name, role_id: answer.newEmployeeRole, manager_id: answer.manager, });
 
+  console.log(`Successfully add ${answer.first_name} ${answer.last_name} to employee`);
+  menublock();
+
+  }catch (err) {
+    console.log(err);
+    menublock();
+};
+};
 // prompted to select an employee to update and their new role and this information is updated in the database 
-function updateEmployeeRole = () => {
-  inquirer.prompt([
+function updateEmployeeRole() {
+  try{
+  console.log('Update an Employee');
+
+  let answer =inquirer.prompt([
     {
       type: "list", // SELECT EMPLOYEE
       message: "Which employee do you want to update?",
       name: "updatedEmployee",
     },
     {
-      type: "input",
+      type: "list", 
       message: "What is their new role?",
       name: "updatedRole",
       }
