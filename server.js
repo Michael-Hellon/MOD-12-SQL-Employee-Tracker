@@ -103,17 +103,45 @@ function menuQuestionsResponse(menuQuestions) {
 }
 // // query functions
 
+/* Basic layout - from mini project
+pool.query(
+  "SELECT id, movie_name AS title FROM movies",
+  function (err, { rows }) {
+    console.log(rows);
+    if (err) res.status(500).json({ error: err.message });
+
+    res.json({
+      message: "success",
+      data: rows,
+    });
+  }
+);
+});
+*/
+
 // displays department table
-function viewAllDepartments = () => {
-function (err, { res }) {
+function viewAllDepartments() {
+  db.query('SELECT * FROM department', function (err, { res }) {
   console.log(res);
+  if (err) throw err;
+
+  let departmentArray = [];
+  res.forEach(department => departmentArray.push(department));
+  console.table(departmentArray);
+
 }  
-}
+)};
 
 // displays roles table
 function viewAllRoles = () => {
-  function (err, { res }) {
-    console.log(res);
+  db.query('SELECT * FROM department', function (err, { res }) {
+  console.log(res);
+  if (err) throw err;
+    
+  let departmentArray = [];
+  res.forEach(department => departmentArray.push(department));
+  console.table(departmentArray);
+     
   }  
 }
 
@@ -121,7 +149,14 @@ function viewAllRoles = () => {
 function viewAllEmployees = () => {
   function (err, { res }) {
     console.log(res);
-  }  
+  }db.query('SELECT * FROM department', function (err, { res }) {
+    console.log(res);
+    if (err) throw err;
+  
+    let departmentArray = [];
+    res.forEach(department => departmentArray.push(department));
+    console.table(departmentArray);
+    
 }
 
 // user prompted to enter the name of the department and that department is added to the database
