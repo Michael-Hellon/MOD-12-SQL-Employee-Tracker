@@ -87,7 +87,7 @@ const menuPrompts = async () => {
 const viewAllDepartments = async () => {
   console.log("View All Departments");
   try{
-    pool.query("SELECT * FROM department", function (err, { res }) {
+    pool.query('SELECT * FROM department', function (err, res) {
     console.log(res);
     if (err) throw err;
 
@@ -107,7 +107,7 @@ const viewAllDepartments = async () => {
 const viewAllRoles = async() => {
   console.log("View All Roles")
   try{
-    pool.query("SELECT * FROM role", function (err, { res }) {
+    pool.query("SELECT * FROM role", function (err, res) {
     console.log(res);
     if (err) throw err;
 
@@ -125,7 +125,7 @@ const viewAllRoles = async() => {
 // displays employees table
 const viewAllEmployees = async() => {
   try{
-    pool.query("SELECT * FROM employee", function (err, { res }) {
+    pool.query("SELECT * FROM employee", function (err, res) {
     console.log(res);
     if (err) throw err;
 
