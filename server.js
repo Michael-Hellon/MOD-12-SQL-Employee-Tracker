@@ -1,5 +1,5 @@
 const express = require("express");
-const sequelize = require('./db/connection');
+const sequelize = require("./db/connection");
 /*
 WHEN I start the application
 THEN I am presented with the following options: view all departments, view all roles, view all employees, add a department, add a role, add an employee, and update an employee role
@@ -23,7 +23,7 @@ THEN I am prompted to select an employee to update and their new role and this i
 const menuPrompts = [
   {
     type: "list",
-    message: 'What would you like to do? (Use the up/down arrow keys to select, then press ENTER)',
+    message: "What would you like to do? (Use the up/down arrow keys to select, then press ENTER)",
     name: "menuQuestions",
     choices: [
       "View All Departments",
@@ -122,7 +122,7 @@ pool.query(
 // displays department table
 function viewAllDepartments() {
   try{
-    db.query('SELECT * FROM department', function (err, { res }) {
+    db.query("SELECT * FROM department", function (err, { res }) {
     console.log(res);
     if (err) throw err;
 
@@ -141,7 +141,7 @@ function viewAllDepartments() {
 // displays roles table
 function viewAllRoles() {
   try{
-    db.query('SELECT * FROM role', function (err, { res }) {
+    db.query("SELECT * FROM role", function (err, { res }) {
     console.log(res);
     if (err) throw err;
 
@@ -159,7 +159,7 @@ function viewAllRoles() {
 // displays employees table
 function viewAllEmployees() {
   try{
-    db.query('SELECT * FROM employee', function (err, { res }) {
+    db.query("SELECT * FROM employee" function (err, { res }) {
     console.log(res);
     if (err) throw err;
 
@@ -176,7 +176,7 @@ function viewAllEmployees() {
 // user prompted to enter the name of the department and that department is added to the database
 function addDepartment() {
   try{
-    console.log('Add a new Department');
+    console.log("Add a new Department");
 
     let answer = inquirer.prompt([
     {
@@ -186,7 +186,7 @@ function addDepartment() {
     },
   ])
 
-  let result = db.query('INSERT INTO department', { name: answer.newDepartment});
+  let result = db.query("INSERT INTO department" { name: answer.newDepartment});
 
   console.log(`Successfully add ${answer.newDepartment} to department`);
   menublock();
@@ -200,8 +200,7 @@ function addDepartment() {
 // prompted to enter the name, salary, and department for the role and that role is added to the database
 function addRole() {
   try{
-  console.log('Add a new Role');
-
+  console.log("Add a new Role");
 
   let departments = db.query("SELECT * FROM department")
 
@@ -229,12 +228,12 @@ function addRole() {
     // need to add new Role ID number into departments
     let givenDept = 0;
     for(let i = 0; i < departments.length; i++) {
-      if(departments[i].departmentID === answer.choice) {
+      if(departments[i].department_ID === answer.choice) {
         givenDept = department[i];
       }
     }
     
-  let result = db.query('INSERT INTO role', { title: answer.newRole, salary: answer.salary, department_id: answer.roleID });
+  let result = db.query("INSERT INTO role", { title: answer.newRole, salary: answer.salary, department_id: answer.roleID });
 
   console.log(`Successfully add ${answer.newRole} to department`);
   menublock();
@@ -248,7 +247,11 @@ function addRole() {
 // prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
 function addEmployee() {
   try{
-  console.log('Add an new Employee');
+  console.log("Add an new Employee");
+
+    let roles = db.query("SELECT * FROM role");
+
+    let managers = db.query("SELECT * FROM employee");
 
   let answer = inquirer.prompt([
     {
@@ -262,18 +265,30 @@ function addEmployee() {
       name: "last_name",
     },
     {
-      type: "input", // need to create list
+      type: "list",
       message: "Enter the role ID of the new Employee",
       name: "newEmployeeRole",
-    },
+      choices: roles.map((role) {
+        return{
+        name:newEmployeeRole.name,
+        value: newEmployeeRole.id,
+        },
+      }),
+    }
     {
-      type: "input", // need to create list
+      type: "list", // need to create list
       message: "Who will be the manager for the new Employee",
       name: "manager",
-    },
-
+      choices: managers.map((manager) {
+        return {
+          name:manager.first_name + " " + manager.last_name,
+          value: manager.id,
+        },
+      }),
+    }
   ])
-  let result = db.query('INSERT INTO employee', { first_name: answer.first_name, last_name: answer.last_name, role_id: answer.newEmployeeRole, manager_id: answer.manager, });
+
+  let result = db.query("INSERT INTO employee", { first_name: answer.first_name, last_name: answer.last_name, role_id: answer.newEmployeeRole, manager_id: answer.manager, });
 
   console.log(`Successfully add ${answer.first_name} ${answer.last_name} to employee`);
   menublock();
@@ -286,21 +301,45 @@ function addEmployee() {
 // prompted to select an employee to update and their new role and this information is updated in the database 
 function updateEmployeeRole() {
   try{
-  console.log('Update an Employee');
+  console.log("Update an Employee");
+
+  let employees = db.query("SELECT FROM employee");
+
+  let rolesUpdate = db.query("SELECT FROM roll")
 
   let answer =inquirer.prompt([
     {
-      type: "list", // SELECT EMPLOYEE
+      type: "list", 
       message: "Which employee do you want to update?",
       name: "updatedEmployee",
+      choices: employees.map((employeesName) {
+        return {
+          name: employeesName.first_name + " " + employeesName.last_name;
+          value: employeesName.id;
+        }
+      })
     },
     {
       type: "list", 
       message: "What is their new role?",
       name: "updatedRole",
+      choice: roles.map((rolesName) {
+        return {
+          name: rolesName.title,
+          value: rolesName.id,
+        }
+      })
       }
   ])
-  .then
+  let result = db.query(`UPDATE employee's information`, { role_id: answer.updatedRole, id: answer.updatedEmployee, });
+
+  console.log(`The Employee's role was successfully updated`);
+  menublock();
+
+  }catch (err) {
+    console.log(err);
+    menublock();
+};
 };
 
 /* Bonus Points
