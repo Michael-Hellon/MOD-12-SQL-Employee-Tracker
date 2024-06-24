@@ -129,11 +129,11 @@ function viewAllDepartments() {
     let departmentArray = [];
     res.forEach(department => departmentArray.push(department));
     console.table(departmentArray);
-    menublock()
+    menuPrompts()
   });
   }catch (err) {
     console.log(err);
-    menublock();
+    menuPrompts();
   };
 };
 
@@ -148,29 +148,29 @@ function viewAllRoles() {
     let roleArray = [];
     res.forEach(employee => employeeArray.push(employee));
     console.table(employeeArray);
-    menublock()
+    menuPrompts()
   });
   }catch (err) {
     console.log(err);
-    menublock();
+    menuPrompts();
   };
 };
 
 // displays employees table
 function viewAllEmployees() {
   try{
-    db.query("SELECT * FROM employee" function (err, { res }) {
+    db.query("SELECT * FROM employee", function (err, { res }) {
     console.log(res);
     if (err) throw err;
 
     let employeeArray = [];
     res.forEach(employee => employeeArray.push(employee));
     console.table(employeeArray);
-    menublock()
+    menuPrompts()
   });
   }catch (err) {
     console.log(err);
-    menublock();
+    menuPrompts();
   };
 };
 // user prompted to enter the name of the department and that department is added to the database
@@ -186,14 +186,14 @@ function addDepartment() {
     },
   ])
 
-  let result = db.query("INSERT INTO department" { name: answer.newDepartment});
+  let result = db.query("INSERT INTO department", { name: answer.newDepartment});
 
   console.log(`Successfully add ${answer.newDepartment} to department`);
-  menublock();
+  menuPrompts();
 
   }catch (err) {
     console.log(err);
-    menublock();
+    menuPrompts();
 };
 };
 
@@ -204,7 +204,7 @@ function addRole() {
 
   let departments = db.query("SELECT * FROM department")
 
-  let answer = inquirer.prompt(
+  let answer = inquirer.prompt([
     {
       type: "input",
       message: "Enter the name of the new Role",
@@ -219,11 +219,14 @@ function addRole() {
       type: "list",
       message: "Enter department ID for the new Role",
       name: "departmentID",
-      choices: departments.map(departmentID) {
+      choices: departments.map((departmentID) => {
+        return {
         name:departmentID.name,
         value: departmentID.id,
-      },
-    });
+        }
+      }),
+    }
+  ]);
 
     // need to add new Role ID number into departments
     let givenDept = 0;
@@ -236,11 +239,11 @@ function addRole() {
   let result = db.query("INSERT INTO role", { title: answer.newRole, salary: answer.salary, department_id: answer.roleID });
 
   console.log(`Successfully add ${answer.newRole} to department`);
-  menublock();
+  menuPrompts();
 
   }catch (err) {
     console.log(err);
-    menublock();
+    menuPrompts();
 };
 };
 
@@ -268,22 +271,22 @@ function addEmployee() {
       type: "list",
       message: "Enter the role ID of the new Employee",
       name: "newEmployeeRole",
-      choices: roles.map((role) {
+      choices: roles.map((role) => {
         return{
         name:newEmployeeRole.name,
         value: newEmployeeRole.id,
-        },
+        }
       }),
-    }
+    },
     {
       type: "list", // need to create list
       message: "Who will be the manager for the new Employee",
       name: "manager",
-      choices: managers.map((manager) {
+      choices: managers.map((manager) => {
         return {
           name:manager.first_name + " " + manager.last_name,
           value: manager.id,
-        },
+        }
       }),
     }
   ])
@@ -291,11 +294,11 @@ function addEmployee() {
   let result = db.query("INSERT INTO employee", { first_name: answer.first_name, last_name: answer.last_name, role_id: answer.newEmployeeRole, manager_id: answer.manager, });
 
   console.log(`Successfully add ${answer.first_name} ${answer.last_name} to employee`);
-  menublock();
+  menuPrompts();
 
   }catch (err) {
     console.log(err);
-    menublock();
+    menuPrompts();
 };
 };
 // prompted to select an employee to update and their new role and this information is updated in the database 
@@ -312,10 +315,10 @@ function updateEmployeeRole() {
       type: "list", 
       message: "Which employee do you want to update?",
       name: "updatedEmployee",
-      choices: employees.map((employeesName) {
+      choices: employees.map((employeesName) => {
         return {
-          name: employeesName.first_name + " " + employeesName.last_name;
-          value: employeesName.id;
+          name: employeesName.first_name + " " + employeesName.last_name,
+          value: employeesName.id,
         }
       })
     },
@@ -323,7 +326,7 @@ function updateEmployeeRole() {
       type: "list", 
       message: "What is their new role?",
       name: "updatedRole",
-      choice: roles.map((rolesName) {
+      choice: roles.map((rolesName)=> {
         return {
           name: rolesName.title,
           value: rolesName.id,
@@ -334,11 +337,11 @@ function updateEmployeeRole() {
   let result = db.query(`UPDATE employee's information`, { role_id: answer.updatedRole, id: answer.updatedEmployee, });
 
   console.log(`The Employee's role was successfully updated`);
-  menublock();
+  menuPrompts();
 
   }catch (err) {
     console.log(err);
-    menublock();
+    menuPrompts();
 };
 };
 
