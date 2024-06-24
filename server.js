@@ -1,7 +1,7 @@
 const express = require("express");
 const { default: inquirer } = require("inquirer");
-// const sequelize = require("./db/connection");
 const { Pool } = require("pg");
+const util = require('util');
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -17,33 +17,20 @@ const pool = new Pool(
     user: "postgres",
     // Enter PostgreSQL password
     password: "!*5642INdian",
-    host: "locahost",
+    host: "localhost",
     database: "employee_db",
-  },
-  console.log("Connected to the employee_db database!")
-);
+  });
+  console.log("Connected to the employee_db database!");
 
-pool.connect();
-menuPrompts();
+  pool.query = util.promisify(pool.query);
+
+pool.connect(function (err) {
+  if (err) throw err;
+  menuPrompts();
+});
+
 console.table('EMPLOYEE TRACKER');
-/*
-WHEN I start the application
-THEN I am presented with the following options: view all departments, view all roles, view all employees, add a department, add a role, add an employee, and update an employee role
-WHEN I choose to view all departments
-THEN I am presented with a formatted table showing department names and department ids
-WHEN I choose to view all roles
-THEN I am presented with the job title, role id, the department that role belongs to, and the salary for that role
-WHEN I choose to view all employees
-THEN I am presented with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
-WHEN I choose to add a department
-THEN I am prompted to enter the name of the department and that department is added to the database
-WHEN I choose to add a role
-THEN I am prompted to enter the name, salary, and department for the role and that role is added to the database
-WHEN I choose to add an employee
-THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
-WHEN I choose to update an employee role
-THEN I am prompted to select an employee to update and their new role and this information is updated in the database 
-*/
+
 
 // Initial prompt to user utilizing command line interface.
 const menuPrompts = async () => {
@@ -60,68 +47,36 @@ const menuPrompts = async () => {
         "Add Role", 
         "Add Employee",
         "Update Employee Role",
-  /*  Bonus Points
-        "Update Employee Manager",
-        "View Employee by Manager",
-        "View Employee by Department",
-        "Delete Departments",
-        "Delete Roles",
-        "Delete Employees",
-        "View Utilized Budget of a Department",
-  */
-        "Quit",
-    ],
+        "Quit"
+    ]
   });
   // switch statement to select follow on questions and provide responses to user
-    switch (answer) {
-      case "View All Departments":
-        viewAllDepartments();
-        break;
-      case "View All Roles":
-        viewAllRoles();
-        break;
-      case "View All Employees":
-        viewAllEmployees();
-        break;
-      case "Add Department":
-        addDepartment();
-        break;
-      case "Add Role":
-        addRole();
-        break;
-      case "Add Employee":
-        addEmployee()
-        break;
-      case "Update Employee Role":
-        updateEmployeeRole();
-        break;
-    /* Bonus Points
-      case "Update Employee Manager":
-        updateEmployeeManager();
-        break;
-      case "View Employee by Manager":
-        ViewEmployeeByManager();
-        break;
-      case "View Employee by Department":
-        ViewEmployeeByDepartment();
-        break;
-      case "Delete Departments":
-        DeleteDepartments();
-        break;
-      case "Delete Roles":
-        DeleteRoles();
-        break;
-      case "Delete Employees":
-        DeleteEmployees();
-        break;
-      case "View Utilized Budget of a Department":
-        ViewUtilizedBudgetOfADepartment();
-        break;
-    */
-      case "Quit":
-        console.log("Goodbye");
-        break;
-    }
+  switch (answer.action) {
+    case "View All Departments":
+      viewAllDepartments();
+      break;
+    case "View All Roles":
+      viewAllRoles();
+      break;
+    case "View All Employees":
+      viewAllEmployees();
+      break;
+    case "Add Department":
+      addDepartment();
+      break;
+    case "Add Role":
+      addRole();
+      break;
+    case "Add Employee":
+      addEmployee()
+      break;
+    case "Update Employee Role":
+      updateEmployeeRole();
+      break;
+    case "Quit":
+      console.log("Goodbye");
+      break;
+    };
   }catch (err) {
     console.log(err);
     menuPrompts();
@@ -129,8 +84,8 @@ const menuPrompts = async () => {
 }
 
 // displays department table
-const viewAllDepartments = async() => {
-  console.log("View All Departments")
+const viewAllDepartments = async () => {
+  console.log("View All Departments");
   try{
     pool.query("SELECT * FROM department", function (err, { res }) {
     console.log(res);
@@ -141,7 +96,7 @@ const viewAllDepartments = async() => {
     console.table(departmentArray);
     menuPrompts()
   });
-  }catch (err) {
+  } catch (err) {
     console.log(err);
     menuPrompts();
   };
@@ -150,14 +105,15 @@ const viewAllDepartments = async() => {
 
 // displays roles table
 const viewAllRoles = async() => {
+  console.log("View All Roles")
   try{
     pool.query("SELECT * FROM role", function (err, { res }) {
     console.log(res);
     if (err) throw err;
 
     let roleArray = [];
-    res.forEach(employee => employeeArray.push(employee));
-    console.table(employeeArray);
+    res.forEach(role => roleArray.push(role));
+    console.table(roleArray);
     menuPrompts()
   });
   }catch (err) {
@@ -356,6 +312,8 @@ const updateEmployeeRole = async() => {
     menuPrompts();
 };
 };
+
+
 
 /* Bonus Points
 const updateEmployeeManager = async() => {
