@@ -24,8 +24,8 @@ const pool = new Pool(
 );
 
 pool.connect();
-menuPrompts()
-console.table(EMPLOYEE TRACKER)
+menuPrompts();
+console.table('EMPLOYEE TRACKER');
 /*
 WHEN I start the application
 THEN I am presented with the following options: view all departments, view all roles, view all employees, add a department, add a role, add an employee, and update an employee role
@@ -328,9 +328,9 @@ const updateEmployeeRole = async() => {
           name: employeesName.first_name + " " + employeesName.last_name,
           value: employeesName.id,
         }
-      })
-    };
-    
+      }),
+    }
+  ]);
     let rolesUpdate = await pool.query("SELECT FROM role");
 
     let roleAnswer = await inquirer.prompt([
