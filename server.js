@@ -1,5 +1,31 @@
 const express = require("express");
-const sequelize = require("./db/connection");
+const { default: inquirer } = require("inquirer");
+// const sequelize = require("./db/connection");
+const { Pool } = require("pg");
+
+const PORT = process.env.PORT || 3001;
+const app = express();
+
+// Express middleware
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+
+// Connect to database
+const pool = new Pool(
+  {
+    // Enter PostgreSQL username
+    user: "postgres",
+    // Enter PostgreSQL password
+    password: "!*5642INdian",
+    host: "locahost",
+    database: "employee_db",
+  },
+  console.log("Connected to the employee_db database!")
+);
+
+pool.connect();
+menuPrompts()
+console.table(EMPLOYEE TRACKER)
 /*
 WHEN I start the application
 THEN I am presented with the following options: view all departments, view all roles, view all employees, add a department, add a role, add an employee, and update an employee role
@@ -20,109 +46,93 @@ THEN I am prompted to select an employee to update and their new role and this i
 */
 
 // Initial prompt to user utilizing command line interface.
-const menuPrompts = [
-  {
-    type: "list",
-    message: "What would you like to do? (Use the up/down arrow keys to select, then press ENTER)",
-    name: "menuQuestions",
-    choices: [
-      "View All Departments",
-      "View All Roles",
-      "View All Employees",
-      "Add Department",
-      "Add Role", 
-      "Add Employee",
-      "Update Employee Role",
-/*  Bonus Points
-      "Update Employee Manager",
-      "View Employee by Manager",
-      "View Employee by Department",
-      "Delete Departments",
-      "Delete Roles",
-      "Delete Employees",
-      "View Utilized Budget of a Department",
-*/
-      "Quit",
+const menuPrompts = async () => {
+  try {
+    let answer = await inquirer.prompt({
+      type: "list",
+      message: "What would you like to do? (Use the up/down arrow keys to select, then press ENTER)",
+      name: "menuQuestions",
+      choices: [
+        "View All Departments",
+        "View All Roles",
+        "View All Employees",
+        "Add Department",
+        "Add Role", 
+        "Add Employee",
+        "Update Employee Role",
+  /*  Bonus Points
+        "Update Employee Manager",
+        "View Employee by Manager",
+        "View Employee by Department",
+        "Delete Departments",
+        "Delete Roles",
+        "Delete Employees",
+        "View Utilized Budget of a Department",
+  */
+        "Quit",
     ],
+  });
+  // switch statement to select follow on questions and provide responses to user
+    switch (answer) {
+      case "View All Departments":
+        viewAllDepartments();
+        break;
+      case "View All Roles":
+        viewAllRoles();
+        break;
+      case "View All Employees":
+        viewAllEmployees();
+        break;
+      case "Add Department":
+        addDepartment();
+        break;
+      case "Add Role":
+        addRole();
+        break;
+      case "Add Employee":
+        addEmployee()
+        break;
+      case "Update Employee Role":
+        updateEmployeeRole();
+        break;
+    /* Bonus Points
+      case "Update Employee Manager":
+        updateEmployeeManager();
+        break;
+      case "View Employee by Manager":
+        ViewEmployeeByManager();
+        break;
+      case "View Employee by Department":
+        ViewEmployeeByDepartment();
+        break;
+      case "Delete Departments":
+        DeleteDepartments();
+        break;
+      case "Delete Roles":
+        DeleteRoles();
+        break;
+      case "Delete Employees":
+        DeleteEmployees();
+        break;
+      case "View Utilized Budget of a Department":
+        ViewUtilizedBudgetOfADepartment();
+        break;
+    */
+      case "Quit":
+        console.log("Goodbye");
+        break;
+    }
+  }catch (err) {
+    console.log(err);
+    menuPrompts();
   }
-]
-
-// switch statement to select follow on questions and provide responses to user
-function menuQuestionsResponse(menuQuestions) {
-  switch (menuQuestions) {
-    case "View All Departments":
-      viewAllDepartments();
-      break;
-    case "View All Roles":
-      viewAllRoles();
-      break;
-    case "View All Employees":
-      viewAllEmployees();
-      break;
-    case "Add Department":
-      addDepartment();
-      break;
-    case "Add Role":
-      addRole();
-      break;
-    case "Add Employee":
-      addEmployee()
-      break;
-    case "Update Employee Role":
-      updateEmployeeRole();
-      break;
-/* Bonus Points
-    case "Update Employee Manager":
-      updateEmployeeManager();
-      break;
-
-    case "View Employee by Manager":
-      ViewEmployeeByManager();
-      break;
-
-    case "View Employee by Department":
-      ViewEmployeeByDepartment();
-      break;
-    case "Delete Departments":
-      DeleteDepartments();
-      break;
-    case "Delete Roles":
-      DeleteRoles();
-      break;
-    case "Delete Employees":
-      DeleteEmployees();
-      break;
-    case "View Utilized Budget of a Department":
-      ViewUtilizedBudgetOfADepartment();
-      break;
-*/
-    case "Quit":
-      console.log("Goodbye");
-  }
-
 }
-// // query functions
-
-/* Basic layout - from mini project
-pool.query(
-  "SELECT id, movie_name AS title FROM movies",
-  function (err, { rows }) {
-    console.log(rows);
-    if (err) res.status(500).json({ error: err.message });
-
-    res.json({
-      message: "success",
-      data: rows,
-    });
-  }
-);
-});
-*/
 
 // displays department table
-function viewAllDepartments() {
+const viewAllDepartments = async() => {
+  console.log("View All Departments")
   try{
-    db.query("SELECT * FROM department", function (err, { res }) {
+    pool.query("SELECT * FROM department", function (err, { res }) {
     console.log(res);
     if (err) throw err;
 
@@ -139,9 +149,9 @@ function viewAllDepartments() {
 
 
 // displays roles table
-function viewAllRoles() {
+const viewAllRoles = async() => {
   try{
-    db.query("SELECT * FROM role", function (err, { res }) {
+    pool.query("SELECT * FROM role", function (err, { res }) {
     console.log(res);
     if (err) throw err;
 
@@ -157,9 +167,9 @@ function viewAllRoles() {
 };
 
 // displays employees table
-function viewAllEmployees() {
+const viewAllEmployees = async() => {
   try{
-    db.query("SELECT * FROM employee", function (err, { res }) {
+    pool.query("SELECT * FROM employee", function (err, { res }) {
     console.log(res);
     if (err) throw err;
 
@@ -174,11 +184,11 @@ function viewAllEmployees() {
   };
 };
 // user prompted to enter the name of the department and that department is added to the database
-function addDepartment() {
+const addDepartment = async() => {
   try{
     console.log("Add a new Department");
 
-    let answer = inquirer.prompt([
+    let answer = await inquirer.prompt([
     {
       type: "input",
       message: "Enter the name of the new Department",
@@ -186,7 +196,7 @@ function addDepartment() {
     },
   ])
 
-  let result = db.query("INSERT INTO department", { name: answer.newDepartment});
+  let result = await pool.query("INSERT INTO department", { name: answer.newDepartment});
 
   console.log(`Successfully add ${answer.newDepartment} to department`);
   menuPrompts();
@@ -198,13 +208,13 @@ function addDepartment() {
 };
 
 // prompted to enter the name, salary, and department for the role and that role is added to the database
-function addRole() {
+const addRole = async() => {
   try{
   console.log("Add a new Role");
 
-  let departments = db.query("SELECT * FROM department")
+  let departments = await pool.query("SELECT * FROM department")
 
-  let answer = inquirer.prompt([
+  let answer =await inquirer.prompt([
     {
       type: "input",
       message: "Enter the name of the new Role",
@@ -229,14 +239,14 @@ function addRole() {
   ]);
 
     // need to add new Role ID number into departments
-    let givenDept = 0;
+    let givenDept;
     for(let i = 0; i < departments.length; i++) {
       if(departments[i].department_ID === answer.choice) {
-        givenDept = department[i];
+        givenDept = departments[i];
       }
     }
     
-  let result = db.query("INSERT INTO role", { title: answer.newRole, salary: answer.salary, department_id: answer.roleID });
+  let result = await pool.query("INSERT INTO role", { title: answer.newRole, salary: answer.salary, department_id: answer.roleID });
 
   console.log(`Successfully add ${answer.newRole} to department`);
   menuPrompts();
@@ -248,15 +258,15 @@ function addRole() {
 };
 
 // prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
-function addEmployee() {
+const addEmployee = async() => {
   try{
   console.log("Add an new Employee");
 
-    let roles = db.query("SELECT * FROM role");
+    let roles = await pool.query("SELECT * FROM role");
 
-    let managers = db.query("SELECT * FROM employee");
+    let managers = await pool.query("SELECT * FROM employee");
 
-  let answer = inquirer.prompt([
+  let answer = await inquirer.prompt([
     {
       type: "input",
       message: "Enter the first name of the new Employee",
@@ -291,7 +301,7 @@ function addEmployee() {
     }
   ])
 
-  let result = db.query("INSERT INTO employee", { first_name: answer.first_name, last_name: answer.last_name, role_id: answer.newEmployeeRole, manager_id: answer.manager, });
+  let result = await pool.query("INSERT INTO employee", { first_name: answer.first_name, last_name: answer.last_name, role_id: answer.newEmployeeRole, manager_id: answer.manager, });
 
   console.log(`Successfully add ${answer.first_name} ${answer.last_name} to employee`);
   menuPrompts();
@@ -302,15 +312,13 @@ function addEmployee() {
 };
 };
 // prompted to select an employee to update and their new role and this information is updated in the database 
-function updateEmployeeRole() {
+const updateEmployeeRole = async() => {
   try{
   console.log("Update an Employee");
 
-  let employees = db.query("SELECT FROM employee");
-
-  let rolesUpdate = db.query("SELECT FROM roll")
-
-  let answer =inquirer.prompt([
+  let employees = await pool.query("SELECT FROM employee");
+  
+  let employeeAnswer = await inquirer.prompt([
     {
       type: "list", 
       message: "Which employee do you want to update?",
@@ -321,20 +329,24 @@ function updateEmployeeRole() {
           value: employeesName.id,
         }
       })
-    },
-    {
-      type: "list", 
-      message: "What is their new role?",
-      name: "updatedRole",
-      choice: roles.map((rolesName)=> {
-        return {
-          name: rolesName.title,
-          value: rolesName.id,
-        }
-      })
+    };
+    
+    let rolesUpdate = await pool.query("SELECT FROM role");
+
+    let roleAnswer = await inquirer.prompt([
+      {
+        type: "list", 
+        message: "What is their new role?",
+        name: "updatedRole",
+        choice: rolesUpdate.map((rolesName)=> {
+          return {
+            name: rolesName.title,
+            value: rolesName.id,
+          }
+        })
       }
   ])
-  let result = db.query(`UPDATE employee's information`, { role_id: answer.updatedRole, id: answer.updatedEmployee, });
+  let result = await pool.query(`UPDATE employee's information`, { role_id: roleAnswer.updatedRole, id: roleAnswer.updatedEmployee, });
 
   console.log(`The Employee's role was successfully updated`);
   menuPrompts();
@@ -346,21 +358,11 @@ function updateEmployeeRole() {
 };
 
 /* Bonus Points
-function updateEmployeeManager();
-function viewEmployeeByManager();
-function viewEmployeeByDepartment();
-function deleteDepartments();
-function deleteRoles();
-function deleteEmployees();
-function viewUtilizedBudgetOfADepartment();
- */
-
-
-
-// function to initialize app
-async function init() {
-  inquirer.prompt(menuPrompts)
-
-    .then()
-
-}
+const updateEmployeeManager = async() => {
+const viewEmployeeByManager = async() => {
+const viewEmployeeByDepartment = async() => {
+const deleteDepartments = async() => {
+const deleteRoles = async() => {
+const deleteEmployees = async() => {
+const viewUtilizedBudgetOfADepartment = async() => {
+*/

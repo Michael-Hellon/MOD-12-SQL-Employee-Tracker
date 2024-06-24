@@ -14,7 +14,7 @@ INSERT INTO DEPARTMENT (
 );
 
 INSERT INTO ROLE (
-    TITLE,
+    TILE,
     SALARY,
     DEPARTMENT_ID
 ) VALUES (
@@ -99,7 +99,7 @@ INSERT INTO EMPLOYEE(
 (
     'Sarah',
     'Lourd',
-    7,
+    7
 ),
 (
     'Tom',
