@@ -1,8 +1,7 @@
 const express = require("express");
-const  inquirer = require("inquirer");
+const inquirer = require("inquirer");
 const { Pool } = require("pg");
 const util  = require('util');
-const consoleTable = require('console.table');
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -21,7 +20,6 @@ const pool = new Pool(
     host: "localhost",
     database: "employee_db",
   });
-
   console.log("Connected to the employee_db database!");
 
   pool.query = util.promisify(pool.query);
@@ -53,7 +51,7 @@ const menuPrompts = async () => {
     ]
   });
   // switch statement to select follow on questions and provide responses to user
-  switch (answer.menuQuestions) {
+  switch (answer.action) {
     case "View All Departments":
       viewAllDepartments();
       break;
@@ -90,16 +88,15 @@ const viewAllDepartments = async () => {
   console.log("View All Departments");
   try{
     pool.query('SELECT * FROM department', function (err, res) {
-   
+    console.log(res);
     if (err) throw err;
 
     console.log('SHOW res.rows', res.rows);
     console.log('SHOW res', res);
 
-    let departmentArray = {};
-    
+    let departmentArray = [];
     res.rows.forEach(department => departmentArray.push(department));
-    console.log(departmentArray);
+    console.table(departmentArray);
     menuPrompts()
   });
   } catch (err) {
@@ -113,7 +110,7 @@ const viewAllDepartments = async () => {
 const viewAllRoles = async() => {
   console.log("View All Roles")
   try{
-    pool.query("SELECT * FROM EmployeeRole", function (err, res) {
+    pool.query("SELECT * FROM role", function (err, res) {
     console.log(res);
     if (err) throw err;
 
@@ -121,7 +118,7 @@ const viewAllRoles = async() => {
     console.log('SHOW res', res);
 
     let roleArray = [];
-    res.rows.forEach(EmployeeRole => roleArray.push(EmployeeRole));
+    res.rows.forEach(role => roleArray.push(role));
     console.table(roleArray);
     menuPrompts()
   });
@@ -133,9 +130,10 @@ const viewAllRoles = async() => {
 
 // displays employees table
 const viewAllEmployees = async() => {
+  console.log("View All Employees")
   try{
     pool.query("SELECT * FROM employee", function (err, res) {
-    console.log(res);
+
     if (err) throw err;
 
     console.log('SHOW res.rows', res.rows);
@@ -214,7 +212,7 @@ const addRole = async() => {
       }
     }
     
-  let result = await pool.query("INSERT INTO EmployeeRole", { title: answer.newRole, salary: answer.salary, department_id: answer.roleID });
+  let result = await pool.query("INSERT INTO role", { title: answer.newRole, salary: answer.salary, department_id: answer.roleID });
 
   console.log(`Successfully add ${answer.newRole} to department`);
   menuPrompts();
@@ -230,7 +228,7 @@ const addEmployee = async() => {
   try{
   console.log("Add an new Employee");
 
-    let roles = await pool.query("SELECT * FROM EmployeeRole");
+    let roles = await pool.query("SELECT * FROM role");
 
     let managers = await pool.query("SELECT * FROM employee");
 
@@ -249,7 +247,7 @@ const addEmployee = async() => {
       type: "list",
       message: "Enter the role ID of the new Employee",
       name: "newEmployeeRole",
-      choices: roles.map((EmployeeRole) => {
+      choices: roles.map((role) => {
         return{
         name:newEmployeeRole.name,
         value: newEmployeeRole.id,
@@ -299,7 +297,7 @@ const updateEmployeeRole = async() => {
       }),
     }
   ]);
-    let rolesUpdate = await pool.query("SELECT FROM EmployeeRole");
+    let rolesUpdate = await pool.query("SELECT FROM role");
 
     let roleAnswer = await inquirer.prompt([
       {
