@@ -51,7 +51,7 @@ const menuPrompts = async () => {
     ]
   });
   // switch statement to select follow on questions and provide responses to user
-  switch (answer.action) {
+  switch (answer.menuQuestions) {
     case "View All Departments":
       viewAllDepartments();
       break;
@@ -88,14 +88,14 @@ const viewAllDepartments = async () => {
   console.log("View All Departments");
   try{
     pool.query('SELECT * FROM department', function (err, res) {
-    console.log(res);
-    if (err) throw err;
+    // console.log(rows);
+    // if (err) throw err;
 
-    console.log('SHOW res.rows', res.rows);
+
     console.log('SHOW res', res);
 
     let departmentArray = [];
-    res.rows.forEach(department => departmentArray.push(department));
+    res.forEach(department => departmentArray.push(department));
     console.table(departmentArray);
     menuPrompts()
   });
